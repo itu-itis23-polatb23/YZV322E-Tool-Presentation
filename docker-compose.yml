@@ -1,0 +1,97 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: polars-demo-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-polars}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-polars_demo_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-taxi}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-polars} -d ${POSTGRES_DB:-taxi}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: polars-demo-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-polars}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-polars_demo_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-taxi}
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+      - ./notebooks:/app/notebooks
+    working_dir: /app
+    # Keep container alive so we can `docker compose exec` into it for the ETL pipeline
+    command: tail -f /dev/null
+
+  jupyter:
+    build: .
+    container_name: polars-demo-jupyter
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-polars}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-polars_demo_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-taxi}
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-polars}
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+      - ./notebooks:/app/notebooks
+    working_dir: /app/notebooks
+    command: >
+      jupyter lab
+        --ip=0.0.0.0
+        --port=8888
+        --no-browser
+        --allow-root
+        --ServerApp.token=${JUPYTER_TOKEN:-polars}
+        --ServerApp.root_dir=/app
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: polars-demo-pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@polars.demo}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-polars_demo_2026}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - ./pgadmin/pgpass:/pgpass:ro
+    entrypoint: >
+      /bin/sh -c "
+        cp /pgpass /tmp/pgpass &&
+        chmod 600 /tmp/pgpass &&
+        chown pgadmin:root /tmp/pgpass &&
+        export PGPASSFILE=/tmp/pgpass &&
+        /entrypoint.sh
+      "
+
+volumes:
+  postgres_data:
+  pgadmin_data:

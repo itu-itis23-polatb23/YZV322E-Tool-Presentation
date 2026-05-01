@@ -1,0 +1,10 @@
+polars[connectorx]==1.40.1
+pandas==2.2.3
+psycopg2-binary==2.9.10
+sqlalchemy==2.0.36
+pyarrow==18.1.0
+matplotlib==3.9.3
+requests==2.32.3
+tqdm==4.67.1
+jupyterlab==4.3.4
+ipywidgets==8.1.5

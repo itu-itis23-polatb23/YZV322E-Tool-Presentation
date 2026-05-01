@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+
+# Environment
+.env
+
+# Data files (too large for git)
+data/*.parquet
+data/*.csv
+!data/sample_taxi.parquet
+
+# Output / generated
+benchmarks/results/*.png
+benchmarks/results/*.csv
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
