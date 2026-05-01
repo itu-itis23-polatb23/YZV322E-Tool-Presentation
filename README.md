@@ -215,7 +215,7 @@ YZV322E-Tool-Presentation/
 ├── notebooks/
 │   └── polars_showcase.ipynb      # ★ feature walkthrough (use for the demo)
 ├── src/
-    └── ett_pipeline.py            # ★ end-to-end ETL pipeline
+    └── etl_pipeline.py            # ★ end-to-end ETL pipeline
 ```
 
 ---
