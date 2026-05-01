@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from datetime import datetime
 
 import polars as pl
+from sqlalchemy import create_engine, text
 
 
 # ----------------------------------------------------------------------
@@ -125,6 +126,40 @@ def load(df: pl.DataFrame, pg_uri: str) -> None:
         engine="sqlalchemy",
     )
     log.info(f"    wrote {len(df):,} rows to {TARGET_TABLE}")
+    
+# ----------------------------------------------------------------------
+# 4. VERIFY — query the target table to confirm the load worked
+# ----------------------------------------------------------------------
+def verify(pg_uri: str) -> None:
+    engine = create_engine(pg_uri)
+    with engine.connect() as conn:
+        # 4a — row count + date range
+        check = conn.execute(text(f"""
+            SELECT COUNT(*)                AS row_count,
+                   MIN(hour_bucket)        AS earliest_hour,
+                   MAX(hour_bucket)        AS latest_hour,
+                   COUNT(DISTINCT pu_location_id) AS unique_zones
+            FROM {TARGET_TABLE}
+        """)).mappings().first()
+
+        log.info(f"    row count    : {check['row_count']:,}")
+        log.info(f"    time range   : {check['earliest_hour']} → {check['latest_hour']}")
+        log.info(f"    unique zones : {check['unique_zones']}")
+
+        # 4b — top 5 busiest (zone, hour) buckets
+        top = conn.execute(text(f"""
+            SELECT pu_location_id, hour_bucket, trip_count, total_revenue
+            FROM {TARGET_TABLE}
+            ORDER BY trip_count DESC
+            LIMIT 5
+        """)).mappings().all()
+
+        log.info("    top 5 busiest (zone, hour) buckets:")
+        for row in top:
+            log.info(f"      zone {row['pu_location_id']:>3}  "
+                     f"{row['hour_bucket']}  "
+                     f"trips={row['trip_count']:>4}  "
+                     f"revenue=${row['total_revenue']:>10,.2f}")
 
 
 # ----------------------------------------------------------------------
@@ -149,6 +184,9 @@ def main():
 
     with stage("LOAD — write summary back to Postgres"):
         load(summary, pg_uri)
+        
+    with stage("VERIFY — sanity-check the loaded table"):
+        verify(pg_uri)
 
     log.info(f"━━━ pipeline finished in {time.time() - pipeline_start:.2f}s")
 

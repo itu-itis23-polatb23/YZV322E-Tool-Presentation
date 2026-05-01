@@ -210,7 +210,7 @@ polars-demo/
 ├── notebooks/
 │   └── polars_showcase.ipynb      # ★ feature walkthrough (use for the demo)
 ├── src/
-    └── elt_pipeline.py            # ★ end-to-end ETL pipeline
+    └── ett_pipeline.py            # ★ end-to-end ETL pipeline
 ```
 
 ---
@@ -255,10 +255,6 @@ Docker Desktop → Settings → Resources, or load fewer months.
 ---
 
 ## 8. AI Usage Disclosure
-
----
-
-## AI Tool Usage Disclosure
 
 In line with academic integrity and transparent development practices, AI assistants were used during this project for the following auxiliary tasks:
 
