@@ -97,6 +97,10 @@ yellow_tripdata_2024-01.parquet: 100%|███████| 47.7M/47.7M [00:08<
 [ok  ] loaded 2,964,624 rows into taxi_trips
 ```
 
+Depending on the computer, duration time might change.
+1. On Macbook: done in 128s
+2. On Windows: done in 660s
+
 ### Step 2 — Open the showcase notebook
 
 JupyterLab is already running inside the `jupyter` container. Open it in your browser:
@@ -263,7 +267,7 @@ Docker Desktop → Settings → Resources, or load fewer months.
 
 In line with academic integrity and transparent development practices, AI assistants were used during this project for the following auxiliary tasks:
 
-- **Docker Compose configuration** — drafting and refining the `docker-compose.yml` file.
+- **Docker Compose configuration** — drafting and refining the `docker-compose.yml` and `Dockerfile` files.
 - **Code scaffolding and debugging** — generating boilerplate templates and assisting with troubleshooting.
 - **Benchmarking notebook** — structuring the Jupyter notebook used for model benchmarking and result comparison.
 - **README documentation** — drafting and validating the structure of this README file.
