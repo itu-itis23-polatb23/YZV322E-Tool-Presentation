@@ -120,7 +120,7 @@ under 30 seconds on a typical laptop after data is loaded.
 ### Step 3 — Run the production ETL pipeline
 
 ```bash
-docker compose exec app python src/elt_pipeline.py
+docker compose exec app python src/etl_pipeline.py
 ```
 
 This script demonstrates the canonical Extract → Transform → Load → Verify
