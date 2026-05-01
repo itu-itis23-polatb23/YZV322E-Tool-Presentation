@@ -57,7 +57,7 @@ docker compose version      # should print v2.20 or higher
 ```bash
 # 1. Clone the repository
 git clone https://github.com/itu-itis23-polatb23/YZV322E-Tool-Presentation.git
-cd polars-demo
+cd YZV322E-Tool-Presentation
 
 # 2. Copy the example env file (defaults work out of the box)
 cp .env.example .env
@@ -177,6 +177,11 @@ ad-hoc SQL against the table.
 
 If you'd rather use the command line:
 
+```bash
+docker compose exec postgres psql -U polars -d taxi -c \
+    "SELECT COUNT(*) FROM taxi_hourly_summary;"
+```
+
 ### Optional — load more months for the streaming demo
 
 ```bash
@@ -193,7 +198,7 @@ confirm RAM stays flat.
 ## 5. Repository structure
 
 ```
-polars-demo/
+YZV322E-Tool-Presentation/
 ├── README.md                      # this file
 ├── docker-compose.yml             # Postgres + app + Jupyter + pgAdmin
 ├── Dockerfile                     # Python 3.12 + Polars 1.40 + Pandas + Jupyter
