@@ -56,7 +56,7 @@ docker compose version      # should print v2.20 or higher
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/itu-itis23-polatb23/polars-demo.git
+git clone https://github.com/itu-itis23-polatb23/YZV322E-Tool-Presentation.git
 cd polars-demo
 
 # 2. Copy the example env file (defaults work out of the box)
